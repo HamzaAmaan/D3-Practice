@@ -12,7 +12,11 @@ const ShowCountryEClist = () => {
   const ecList =
   data.length === 0
       ? 'there is no EC record!'
-      : data.map((ec, k) => <EnergyConsumption ec={ec} key={k} />);
+      : data.map((yearlyData, k) => {
+        yearlyData.country = ec._id;
+        yearlyData.iso_code = ec.iso_code; 
+        return <EnergyConsumption ec={yearlyData} key={k}/>;
+      });
 
   return (
       <div className='ShowECList'>
@@ -23,7 +27,7 @@ const ShowCountryEClist = () => {
                 <button
                 className="btn btn-outline-warning float-left"
                 onClick={() => navigate(-1)}>
-                    Show Dashboard
+                    Home
                 </button>
             </div>
             <div className='row'>

@@ -2,10 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import * as d3 from "d3";
 import axios from 'axios';
 
-const WorldMap = () => {
+const WorldMap = ({ setCountry }) => {
     const svgRef = useRef();
     const [error, setError] = useState(null); // Initialize error state
-    const [country, setCountry] = useState(null); // Initialize error state
     const zoomedInRef = useRef(false); // Ref to track zoom state
     const countryRef = useRef(null); // Ref to track the currently selected country
     const scaleRef = useRef(null);
@@ -164,14 +163,18 @@ const WorldMap = () => {
 
     const createScrollHandler = (svg, projection, pathGenerator) => {
         return function handleScroll(event) {
+            if(zoomedInRef.current)
+            {
+                return;
+            }
             setCountry(null);
             zoomedInRef.current = false;
             countryRef.current = null;
 
             const scrollDelta = event.deltaY;
             const zoomFactor = 1 + (scrollDelta > 0 ? 0.1 : -0.1);
-            const newScale = projection.scale() * zoomFactor;
-            projection.scale(newScale);
+            const newScale = scaleRef.current * zoomFactor;
+            projection.scale(newScale).rotate(rotationRef.current);
             scaleRef.current = newScale;
             // Lock window scroll during zoom
             document.body.style.overflow = "hidden";
@@ -198,13 +201,12 @@ const WorldMap = () => {
 
     return (
         <div className="text-center">
-            <div>{country ? `${country.name} (${country.iso_code})` : "World"}</div>
             <div width={width}>
                 <div width={width}>
                     {error && <p>Error loading map: {error}</p>}
                     <svg ref={svgRef} width={width} height={height} ></svg>
                 </div>
-                <button className="btn btn-primary mt-3" onClick={resetMap}>Reset Map</button>
+                <button className="btn btn-primary mt-3" onClick={resetMap}>Reset View</button>
             </div>
         </div>
       );

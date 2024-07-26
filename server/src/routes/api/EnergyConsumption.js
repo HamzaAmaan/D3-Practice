@@ -12,11 +12,10 @@ router.get('/', (req, res) => {
         {
             $group: {
                 _id: "$country",
+                iso_code: { $first: "$iso_code" },
                 data: {
                     $push: {
-                        country: "$country",
                         year: "$year",
-                        iso_code: "$iso_code",
                         population: "$population",
                         gdp: "$gdp"
                     }
